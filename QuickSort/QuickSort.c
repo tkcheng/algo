@@ -5,10 +5,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+/* #include "benchmark_timer.h" */
 /* #define PRINT_SORTED_RESULT */
 
-int Array[100*1024] = { 2, 6, 3, 8, 5, 4, 1, 9, 7 };
+#define RANDOM_SIZE		32		//make it memory align
+int RandomValue[RANDOM_SIZE] = {
+		12, 87, 45, 76, 23, 12, 34, 98, 84, 93,
+		96, 61, 15, 20, 74, 62, 13, 50, 29, 34,
+		84, 27, 93, 10, 54, 22, 98, 25, 47, 12,
+		35, 87
+};
+int Array[33*1024];
 
 void QuickSort(int *target, int left, int right) 
 {
@@ -33,6 +42,7 @@ void QuickSort(int *target, int left, int right)
     }
 
     for(;;) {
+        printf("in for loop\n");
         //shift cursor finding target element to shift
         while(target[i] < pivot)
         { 
@@ -60,17 +70,32 @@ void QuickSort(int *target, int left, int right)
     recursive_deep_level--;
 }
 
-void main(void)
+int main(void)
 {
-  int i, size=sizeof(Array)/sizeof(int);
+  int j;
+  int i, size=sizeof(Array)/sizeof(int), random_size = sizeof(RandomValue);
+  int ArraySize = sizeof(Array);
+  double duration;
+  /* struct high_resolution_timer timer_a; */
 
-  for(i=0;i<size;i++)
+  printf("Array size:%d\n", ArraySize);
+  printf("size:%d\n", size);
+  printf("random_size:%d\n", random_size);
+  printf("RANDOM_SIZE:%d\n", RANDOM_SIZE);
+  printf("sizeof(RandomValue):%d\n", sizeof(RandomValue));
+  for(i=0;i<ArraySize;i+=random_size)
   {
-      Array[i] = random();
+      if(i>=ArraySize)
+          break;
+      printf("i:%d\n", i);
+      memcpy(&Array[i/4], RandomValue, random_size);
   }
 
+  printf("before QS\n");
   //run quicksort algorithm
   QuickSort(Array, 0, size-1);
+  /* duration = timer_a.elapsed(); */
+  /* printf("duration:%f:Secs\n", duration); */
 
 #ifdef PRINT_SORTED_RESULT
   //print result
@@ -81,5 +106,6 @@ void main(void)
   printf("\n");
 #endif //#ifdef PRINT_SORTED_RESULT
 
+  return 0;
 }
 
